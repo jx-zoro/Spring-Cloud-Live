@@ -4,10 +4,11 @@ WORKDIR /app
 COPY . .
 RUN mvn clean package -DskipTests
 
-# Stage 2: Run the executable WAR package with Java 17
+# Stage 2: Run the executable WAR package
 FROM eclipse-temurin:17-jdk
 WORKDIR /app
-COPY --from=build /app/target/*.war app.war
+COPY --from=build /app/target/*.war /app/app.war
+RUN chmod 755 /app/app.war
 EXPOSE 8083
 ENV PORT=8083
-ENTRYPOINT ["java", "-jar", "app.war"]
+ENTRYPOINT ["java", "-jar", "/app/app.war"]
