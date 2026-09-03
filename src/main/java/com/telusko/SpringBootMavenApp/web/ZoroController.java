@@ -1,31 +1,38 @@
-package com.telusko.SpringBootMavenApp.web;
+package com.SpringBootMavenApp.web;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import java.util.List;
 
 @RestController
 public class ZoroController {
 
+    @Autowired
+    private FeedbackRepository feedbackRepo;
+
+    // --- YOUR HTML DASHBOARD PORTAL ---
     @GetMapping({"/", "/greeting"})
     public String generateGreeting(
-            @RequestParam(name = "userName", required = false, defaultValue = "J.S. Surya") String userName,
+            @RequestParam(name = "username", required = false, defaultValue = "J.S. Surya") String username,
             @RequestParam(name = "tier", required = false, defaultValue = "Master Developer") String tier) {
 
-        int hour = LocalTime.now().getHour();
+        int hour = LocalDateTime.now().getHour();
         String timeGreeting;
-        if (hour >= 5 && hour < 12) {
-            timeGreeting = "Morning";
-        } else if (hour >= 12 && hour < 17) {
-            timeGreeting = "Afternoon";
+        if (hour < 12) {
+            timeGreeting = "Good Morning";
+        } else if (hour < 17) {
+            timeGreeting = "Good Afternoon";
         } else {
-            timeGreeting = "Evening";
+            timeGreeting = "Good Evening";
         }
 
         MemoryMXBean memoryBean = ManagementFactory.getMemoryMXBean();
@@ -34,71 +41,85 @@ public class ZoroController {
         int activeThreads = Thread.activeCount();
         String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
-        return "<!DOCTYPE html>"
-                + "<html lang='en'>"
-                + "<head>"
-                + "<meta charset='UTF-8'>"
-                + "<meta name='viewport' content='width=device-width, initial-scale=1.0'>"
-                + "<title>Spring Boot Enterprise Portal</title>"
-                + "<style>"
-                + "  * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }"
-                + "  body { background-color: #0b1118; color: #e6edf3; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 24px; }"
-                + "  .portal-container { background: #121820; border: 1px solid #232d3b; border-radius: 14px; width: 100%; max-width: 780px; padding: 36px; box-shadow: 0 20px 45px rgba(0, 0, 0, 0.75); }"
-                + "  .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #1f2937; padding-bottom: 24px; margin-bottom: 28px; }"
-                + "  .headline h1 { font-size: 28px; font-weight: 700; color: #58a6ff; line-height: 1.35; }"
-                + "  .headline p { color: #8b949e; font-size: 13.5px; margin-top: 8px; }"
-                + "  .status-badge { display: inline-flex; align-items: center; gap: 7px; background: rgba(35, 134, 54, 0.18); border: 1px solid #238636; color: #3fb950; font-size: 11px; font-weight: 700; padding: 5px 12px; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.5px; }"
-                + "  .status-dot { width: 7px; height: 7px; background: #3fb950; border-radius: 50%; box-shadow: 0 0 8px #3fb950; }"
-                + "  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; margin-bottom: 28px; }"
-                + "  .card { background: #0b1118; border: 1px solid #1f2a38; border-radius: 10px; padding: 20px; }"
-                + "  .card-label { display: flex; align-items: center; gap: 7px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: #8b949e; margin-bottom: 10px; }"
-                + "  .indicator-dot { width: 6px; height: 6px; background: #238636; border-radius: 50%; }"
-                + "  .card-val { font-size: 21px; font-weight: 700; color: #f0f6fc; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }"
-                + "  .card-val span { color: #8b949e; font-size: 14px; font-weight: 400; }"
-                + "  .card-sub { font-size: 12px; color: #58a6ff; margin-top: 6px; }"
-                + "  .footer { background: #070c12; border: 1px solid #1c2633; border-radius: 8px; padding: 14px 20px; font-size: 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; display: flex; justify-content: space-between; align-items: center; color: #8b949e; }"
-                + "  .highlight { color: #3fb950; font-weight: 700; }"
-                + "</style>"
-                + "</head>"
-                + "<body>"
-                + "<div class='portal-container'>"
-                + "  <div class='header'>"
-                + "    <div class='headline'>"
-                + "      <h1>Good " + timeGreeting + ", " + userName + ".<br>Welcome to the Enterprise Portal.</h1>"
-                + "      <p>Embedded Tomcat with active Spring IoC dependency architecture & service layers.</p>"
-                + "    </div>"
-                + "    <div class='status-badge'>"
-                + "      <span class='status-dot'></span> Connected Successfully"
-                + "    </div>"
-                + "  </div>"
-                + "  <div class='grid'>"
-                + "    <div class='card'>"
-                + "      <div class='card-label'><span class='indicator-dot'></span> JVM HEAP MEMORY</div>"
-                + "      <div class='card-val'>" + usedMemory + " MB <span>/ " + maxMemory + " MB</span></div>"
-                + "      <div class='card-sub'>Active Dynamic Allocation</div>"
-                + "    </div>"
-                + "    <div class='card'>"
-                + "      <div class='card-label'><span class='indicator-dot'></span> ACTIVE JVM THREADS</div>"
-                + "      <div class='card-val'>" + activeThreads + " Threads</div>"
-                + "      <div class='card-sub'>Multi-threaded Pool</div>"
-                + "    </div>"
-                + "    <div class='card'>"
-                + "      <div class='card-label'><span class='indicator-dot'></span> REQUEST PARAMETERS</div>"
-                + "      <div class='card-val'>" + userName + "</div>"
-                + "      <div class='card-sub'>DEVELOPER ROLE // " + tier + "</div>"
-                + "    </div>"
-                + "    <div class='card'>"
-                + "      <div class='card-label'><span class='indicator-dot'></span> VIEW ENGINE</div>"
-                + "      <div class='card-val'>Tomcat Jasper</div>"
-                + "      <div class='card-sub'>greet.jsp restored layout</div>"
-                + "    </div>"
-                + "  </div>"
-                + "  <div class='footer'>"
-                + "    <div>SERVER TIME: <span class='highlight'>" + timestamp + "</span></div>"
-                + "    <div>PORTAL STATUS: <span class='highlight'>OPERATIONAL</span></div>"
-                + "  </div>"
-                + "</div>"
-                + "</body>"
-                + "</html>";
+        return "<!DOCTYPE html>" +
+                "<html lang='en'>" +
+                "<head>" +
+                "<meta charset='UTF-8'>" +
+                "<meta name='viewport' content='width=device-width, initial-scale=1.0'>" +
+                "<title>Spring Boot Enterprise Portal</title>" +
+                "<style>" +
+                "* { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }" +
+                "body { background-color: #0b1118; color: #e6edf3; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }" +
+                ".portal-container { background: #121820; border: 1px solid #232d3b; border-radius: 12px; width: 100%; max-width: 650px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }" +
+                ".header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }" +
+                ".headline h1 { font-size: 28px; font-weight: 700; color: #58a6ff; line-height: 1.2; }" +
+                ".headline p { color: #8b949e; font-size: 13.5px; margin-top: 8px; }" +
+                ".status-badge { display: inline-flex; align-items: center; gap: 7px; background: rgba(56, 139, 253, 0.1); border: 1px solid rgba(56, 139, 253, 0.3); border-radius: 20px; padding: 6px 12px; font-size: 12px; color: #58a6ff; font-weight: 600; }" +
+                ".status-dot { width: 7px; height: 7px; background: #3fb950; border-radius: 50%; box-shadow: 0 0 8px #3fb950; }" +
+                ".grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin: 20px 0; }" +
+                ".card { background: #0b1118; border: 1px solid #1f2a38; border-radius: 10px; padding: 14px; }" +
+                ".card-label { display: flex; align-items: center; gap: 7px; font-size: 11px; color: #8b949e; text-transform: uppercase; letter-spacing: 0.5px; }" +
+                ".indicator-dot { width: 6px; height: 6px; background: #238636; border-radius: 50%; }" +
+                ".card-val { font-size: 21px; font-weight: 700; color: #f0f6fc; font-family: monospace; margin-top: 8px; }" +
+                ".card-val span { color: #8b949e; font-size: 14px; font-weight: 400; }" +
+                ".card-sub { font-size: 12px; color: #58a6ff; margin-top: 6px; }" +
+                ".footer { background: #070c12; border: 1px solid #1c2633; border-radius: 8px; padding: 12px; font-size: 12px; color: #8b949e; display: flex; justify-content: space-between; }" +
+                ".highlight { color: #3fb950; font-weight: 700; }" +
+                "</style>" +
+                "</head>" +
+                "<body>" +
+                "<div class='portal-container'>" +
+                "<div class='header'>" +
+                "<div class='headline'>" +
+                "<h1>" + timeGreeting + ", " + username + "</h1>" +
+                "<p>Embedded Tomcat with active Spring IoC dependency architecture & service layer.</p>" +
+                "</div>" +
+                "<div class='status-badge'>" +
+                "<span class='status-dot'></span> Connected Successfully" +
+                "</div>" +
+                "</div>" +
+                "<div class='grid'>" +
+                "<div class='card'>" +
+                "<div class='card-label'><span class='indicator-dot'></span> JVM Heap Memory</div>" +
+                "<div class='card-val'>" + usedMemory + " <span>MB</span> / " + maxMemory + " <span>MB</span></div>" +
+                "<div class='card-sub'>Active Dynamic Allocation</div>" +
+                "</div>" +
+                "<div class='card'>" +
+                "<div class='card-label'><span class='indicator-dot'></span> Active JVM Threads</div>" +
+                "<div class='card-val'>" + activeThreads + " <span>Threads</span></div>" +
+                "<div class='card-sub'>Multi-Threaded Pool</div>" +
+                "</div>" +
+                "<div class='card'>" +
+                "<div class='card-label'><span class='indicator-dot'></span> Request Parameters</div>" +
+                "<div class='card-val'>" + username + "</div>" +
+                "<div class='card-sub'>DEVELOPER ROLE // " + tier + "</div>" +
+                "</div>" +
+                "<div class='card'>" +
+                "<div class='card-label'><span class='indicator-dot'></span> Server Time</div>" +
+                "<div class='card-val' style='font-size:15px;'>" + timestamp + "</div>" +
+                "<div class='card-sub'>Standard UTC System Time</div>" +
+                "</div>" +
+                "</div>" +
+                "<div class='footer'>" +
+                "<span>Status: <span class='highlight'>ONLINE (200 OK)</span></span>" +
+                "<span>Containerized Web Service</span>" +
+                "</div>" +
+                "</div>" +
+                "</body>" +
+                "</html>";
+    }
+
+    // --- POSTGRESQL REST ENDPOINTS ---
+
+    // POST: Receives JSON data and inserts it into PostgreSQL
+    @PostMapping("/api/feedback")
+    public Feedback saveFeedback(@RequestBody Feedback feedback) {
+        return feedbackRepo.save(feedback);
+    }
+
+    // GET: Fetches all saved feedback records from PostgreSQL
+    @GetMapping("/api/feedback")
+    public List<Feedback> getAllFeedback() {
+        return feedbackRepo.findAll();
     }
 }
