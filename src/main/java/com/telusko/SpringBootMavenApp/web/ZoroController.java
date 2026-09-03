@@ -3,21 +3,16 @@ package com.telusko.SpringBootMavenApp.web;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.telusko.SpringBootMavenApp.service.IGreetingService;
-
 @Controller
 public class ZoroController {
-
-    @Autowired(required = false)
-    private IGreetingService service;
 
     @GetMapping("/greeting")
     public String generateGreeting(
@@ -25,8 +20,19 @@ public class ZoroController {
             @RequestParam(name = "tier", required = false, defaultValue = "Master Developer") String tier,
             Model model) {
 
-        String greeting = (service != null) ? service.generateGreeting(userName) : ("Welcome, " + userName);
+        // Dynamic time-based enterprise greeting
+        int hour = LocalTime.now().getHour();
+        String timeOfDay;
+        if (hour >= 5 && hour < 12) {
+            timeOfDay = "Morning";
+        } else if (hour >= 12 && hour < 17) {
+            timeOfDay = "Afternoon";
+        } else {
+            timeOfDay = "Evening";
+        }
+        String greeting = "Good " + timeOfDay + ", " + userName + ". Welcome to the Enterprise Portal.";
 
+        // Live system performance metrics
         MemoryMXBean memoryBean = ManagementFactory.getMemoryMXBean();
         long usedMemory = memoryBean.getHeapMemoryUsage().getUsed() / (1024 * 1024);
         long maxMemory = memoryBean.getHeapMemoryUsage().getMax() / (1024 * 1024);
