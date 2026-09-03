@@ -1,4 +1,4 @@
-package com.telusko.SpringBootWebapp;
+package com.telusko.SpringBootMavenApp.web;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,12 +12,11 @@ public class Feedback {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; // Auto-generated ID (1, 2, 3...)
+    private Long id;
 
     private String name;
     private String message;
 
-    // Default constructor needed by JPA
     public Feedback() {}
 
     public Feedback(String name, String message) {
@@ -25,7 +24,6 @@ public class Feedback {
         this.message = message;
     }
 
-    // Getters and Setters
     public Long getId() {
         return id;
     }
