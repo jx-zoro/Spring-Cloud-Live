@@ -1,4 +1,4 @@
-package com.telusko;
+package com.telusko.SpringBootMavenApp;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
