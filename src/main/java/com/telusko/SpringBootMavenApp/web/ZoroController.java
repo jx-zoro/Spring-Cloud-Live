@@ -1,9 +1,6 @@
-package com.SpringBootMavenApp.web;
+package com.telusko.SpringBootMavenApp.web;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -11,15 +8,10 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 @RestController
 public class ZoroController {
 
-    @Autowired
-    private FeedbackRepository feedbackRepo;
-
-    // --- YOUR HTML DASHBOARD PORTAL ---
     @GetMapping({"/", "/greeting"})
     public String generateGreeting(
             @RequestParam(name = "username", required = false, defaultValue = "J.S. Surya") String username,
@@ -107,19 +99,5 @@ public class ZoroController {
                 "</div>" +
                 "</body>" +
                 "</html>";
-    }
-
-    // --- POSTGRESQL REST ENDPOINTS ---
-
-    // POST: Receives JSON data and inserts it into PostgreSQL
-    @PostMapping("/api/feedback")
-    public Feedback saveFeedback(@RequestBody Feedback feedback) {
-        return feedbackRepo.save(feedback);
-    }
-
-    // GET: Fetches all saved feedback records from PostgreSQL
-    @GetMapping("/api/feedback")
-    public List<Feedback> getAllFeedback() {
-        return feedbackRepo.findAll();
     }
 }
